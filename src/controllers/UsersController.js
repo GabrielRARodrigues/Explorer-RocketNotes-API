@@ -1,4 +1,5 @@
-import AppError from "../utils/AppError.js"
+import AppError from '../utils/AppError.js'
+import sqliteConnection from '../database/sqlite/index.cjs'
 
 class UsersController {
   /**
@@ -9,14 +10,17 @@ class UsersController {
    * delete - DELETE para remover um registro
    */
 
-  create(request, response) {
+  async create(request, response) {
     const { name, email, password } = request.body
 
-    if(!name){
-      throw new AppError("Nome é obrigatório")
+    const database = await sqliteConnection()
+    const checkUserExists = await database.get("SELECT * FROM users WHERE email = (?)", [email])
+
+    if(checkUserExists){
+      throw new AppError("Este email já está em uso.")
     }
 
-    response.status(201).json({ name, email, password })
+    return response.status(201).json()
   }
 }
 
