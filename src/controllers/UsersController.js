@@ -48,15 +48,9 @@ class UsersController {
 
     const database = await sqliteConnection()
     const user = await database.get('SELECT * FROM users WHERE id = (?)', [id])
-    try {
-      if (!user) {
-        throw new AppError('Usuário não encontrado')
-      }
-    } catch (error) {
-      return response.status(error.statusCode).json({
-        status: 'error',
-        message: error.message
-      })
+
+    if (!user) {
+      throw new AppError('Usuário não encontrado')
     }
 
     const userWithUpdatedEmail = await database.get(
@@ -64,43 +58,24 @@ class UsersController {
       [email]
     )
 
-    try {
-      if (userWithUpdatedEmail && userWithUpdatedEmail.id !== user.id) {
-        throw new AppError('Este e-mail já está em uso.')
-      }
-    } catch (error) {
-      return response.status(error.statusCode).json({
-        status: 'error',
-        message: error.message
-      })
+    if (userWithUpdatedEmail && userWithUpdatedEmail.id !== user.id) {
+      throw new AppError('Este e-mail já está em uso.')
     }
 
     user.name = name ?? user.name
     user.email = email ?? user.email
-    try {
-      if (password && !old_password) {
-        throw new AppError(
-          'Você precisa informar a senha antiga para definir a nova senha'
-        )
-      }
-    } catch (error) {
-      return response.status(error.statusCode).json({
-        status: 'error',
-        message: error.message
-      })
+
+    if (password && !old_password) {
+      throw new AppError(
+        'Você precisa informar a senha antiga para definir a nova senha'
+      )
     }
 
     if (password && old_password) {
       const checkOldPassword = await compare(old_password, user.password)
-      try {
-        if (!checkOldPassword) {
-          throw new AppError('A senha antiga não confere')
-        }
-      } catch (error) {
-        return response.status(error.statusCode).json({
-          status: 'error',
-          message: error.message
-        })
+
+      if (!checkOldPassword) {
+        throw new AppError('A senha antiga não confere')
       }
 
       user.password = await hash(password, 8)
