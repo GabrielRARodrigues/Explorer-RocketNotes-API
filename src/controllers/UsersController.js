@@ -21,15 +21,8 @@ class UsersController {
       [email]
     )
 
-    try {
-      if (checkUserExists) {
-        throw new AppError('Este email já está em uso.')
-      }
-    } catch (error) {
-      return response.status(error.statusCode).json({
-        status: 'error',
-        message: error.message
-      })
+    if (checkUserExists) {
+      throw new AppError('Este email já está em uso.')
     }
 
     const hashedPassword = await hash(password, 8)

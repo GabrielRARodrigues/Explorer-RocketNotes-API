@@ -3,7 +3,7 @@ import 'express-async-errors'
 import migrationsRun from './database/sqlite/migrations/index.js'
 
 import AppError from './utils/AppError.js'
-import express, { response } from 'express'
+import express from 'express'
 import routes from './routes/index.js'
 
 migrationsRun()
