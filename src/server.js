@@ -5,11 +5,14 @@ import migrationsRun from './database/sqlite/migrations/index.js'
 import AppError from './utils/AppError.js'
 import express from 'express'
 import routes from './routes/index.js'
+import uploadConfig from './configs/upload.js'
 
 migrationsRun()
 
 const app = express()
 app.use(express.json())
+
+app.use('/files', express.static(uploadConfig.UPLOADS_FOLDER))
 
 app.use(routes)
 
@@ -20,7 +23,6 @@ app.use((error, request, response, next) => {
       message: error.message
     })
   }
- 
 
   return response.status(500).json({
     status: 'error',
