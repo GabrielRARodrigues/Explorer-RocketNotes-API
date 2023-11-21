@@ -1,7 +1,6 @@
-import bcryptjs from 'bcryptjs'
-const { hash, compare } = bcryptjs
-import AppError from '../utils/AppError.js'
 import sqliteConnection from '../database/sqlite/index.cjs'
+import UserRepository from '../repositories/UserRepository.js'
+import UserCreateService from '../services/UserCreateService.js'
 
 class UsersController {
   /**
@@ -15,22 +14,10 @@ class UsersController {
   async create(request, response) {
     const { name, email, password } = request.body
 
-    const database = await sqliteConnection()
-    const checkUserExists = await database.get(
-      'SELECT * FROM users WHERE email = (?)',
-      [email]
-    )
+    const userRepository = new UserRepository()
+    const userCreateService = new UserCreateService(userRepository)
 
-    if (checkUserExists) {
-      throw new AppError('Este email já está em uso.')
-    }
-
-    const hashedPassword = await hash(password, 8)
-
-    await database.run(
-      'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-      [name, email, hashedPassword]
-    )
+    await userCreateService.execute({ name, email, password })
 
     return response.status(201).json()
   }
