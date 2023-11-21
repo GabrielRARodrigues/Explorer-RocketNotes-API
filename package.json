@@ -7,7 +7,8 @@
   "scripts": {
     "start": "pm2-runtime start ecosystem.config.cjs --env production",
     "dev": "nodemon ./src/server.js",
-    "migrate": "knex migrate:latest --knexfile knexfile.cjs"
+    "migrate": "knex migrate:latest --knexfile knexfile.cjs",
+    "test": "jest"
   },
   "author": "Gabriel Rodrigues",
   "license": "ISC",
@@ -25,6 +26,7 @@
     "sqlite3": "^5.1.6"
   },
   "devDependencies": {
+    "jest": "^29.7.0",
     "nodemon": "^2.0.22"
   }
 }
