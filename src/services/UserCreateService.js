@@ -1,7 +1,7 @@
 import bcryptjs from 'bcryptjs'
 import AppError from '../utils/AppError.js'
 
-const { hash, compare } = bcryptjs
+const { hash } = bcryptjs
 
 class UserCreateService {
   constructor(userRepository) {
@@ -17,7 +17,13 @@ class UserCreateService {
 
     const hashedPassword = await hash(password, 8)
 
-    await this.userRepository.create({ name, email, password: hashedPassword })
+    const userCreated = await this.userRepository.create({
+      name,
+      email,
+      password: hashedPassword
+    })
+
+    return userCreated
   }
 }
 
